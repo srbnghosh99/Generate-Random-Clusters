@@ -1,3 +1,5 @@
+import pandas as pd
+
 def degree_based_comm(G):
     communitydict = G.degree()
     detected_community_df = pd.DataFrame.from_dict(communitydict)
