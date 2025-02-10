@@ -1,3 +1,7 @@
+import networkx as nx
+import numpy as np
+from sklearn.cluster import KMeans
+from collections import defaultdict
 
 def influence_spread_communities(G):
     # G = nx.karate_club_graph()  # Example dataset
@@ -28,9 +32,9 @@ def influence_spread_communities(G):
 
     # Print communities
 
-    communities = defaultdict(list)
+     communities = defaultdict(list)
     for node, comm in node_communities.items():
         communities[comm].append(node)
 
     for comm, members in communities.items():
-        print(f"Community {comm + 1}: {len(members)}")
+        print(f"Community {comm + 1}: {members}")
