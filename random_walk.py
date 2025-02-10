@@ -1,3 +1,7 @@
+import numpy as np
+import random
+from sklearn.cluster import KMeans
+
 def random_walk(graph, start_node, walk_length):
     walk = [start_node]
     for _ in range(walk_length - 1):
