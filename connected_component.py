@@ -1,3 +1,6 @@
+import networkx as nx
+import pandas as pd
+
 def connected_components(G):
     commid = []
     nodeslist = []
