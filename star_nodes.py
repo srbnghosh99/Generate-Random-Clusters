@@ -1,3 +1,6 @@
+import numpy as np
+from sklearn.cluster import KMeans
+from collections import defaultdict
 
 def star_nodes(G):
     # Get degree for each node
