@@ -41,6 +41,10 @@ python3 main.py --inputfilename trustnetwork.csv --command random_node_sampling 
 - `random_node_sampling` : Performs random node sampling for community detection
 - `graph_traversal` : Uses graph traversal (BFS) for community detection
 
+## Run all features with script file
+```bash
+./script.sh
+```
 ## Example Output
 For an input graph with edges listed in `trustnetwork.csv`, the tool will process the graph using the selected community detection method and generate the corresponding output file (if applicable).
 
