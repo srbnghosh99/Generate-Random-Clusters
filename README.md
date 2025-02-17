@@ -23,7 +23,7 @@ To run the main script, specify the input graph file, the community detection me
 
 ### Example Command
 ```bash
-python3 main.py --inputfilename trustnetwork.csv --command random_node_sampling --outputfilename output_degree.csv
+python3 main.py --inputfilename trustnetwork.csv random_node_sampling --outputfilename output_degree.csv
 ```
 
 ### Arguments
@@ -40,6 +40,8 @@ python3 main.py --inputfilename trustnetwork.csv --command random_node_sampling 
 - `node_similarity` : Uses node similarity to detect communities
 - `random_node_sampling` : Performs random node sampling for community detection
 - `graph_traversal` : Uses graph traversal (BFS) for community detection
+- `clique_clusters` : Uses Cliques to allocate nodes to communities
+- `ego_clusters` : Uses ego network to allocate nodes to communities
 
 ## Run all features with script file
 ```bash
