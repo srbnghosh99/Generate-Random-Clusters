@@ -1,6 +1,6 @@
 # Random Community Generation Based on Features
 
-This repository provides a set of random generated communities for a given graph which is not purely random rather tailored with some features. The tool takes an input graph file and applies the selected feature technique to random communities with meaningful structures within the network for intitialization purpose of optimization problem with metaheuristic. 
+This repository provides a set of randomly generated communities for a given graph which is not purely random rather tailored with some features. The tool takes an input graph file and applies the selected feature technique to randomly generated communities with meaningful structures within the network for intitialization purpose of optimization problem using metaheuristic. 
 
 ## Features
 - Degree-based communities
