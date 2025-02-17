@@ -11,3 +11,5 @@ python3 main.py --inputfilename karate.edgelist node_similarity --outputfilename
 python3 main.py --inputfilename karate.edgelist random_node_sampling --outputfilename output_degree.csv
 
 python3 main.py --inputfilename karate.edgelist graph_traversal --outputfilename output_degree.csv
+
+python3 main.py --inputfilename karate.edgelist clique_clusters --outputfilename output_degree.csv
