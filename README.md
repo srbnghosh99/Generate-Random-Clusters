@@ -1,16 +1,18 @@
 # Random Community Generation Based on Features
 
-This repository provides a set of community detection algorithms that generate random communities based on various graph-based features. The tool takes an input graph file and applies the selected community detection technique to identify meaningful structures within the network.
+This repository provides a set of random generated communities for a given graph which is not purely random rather tailored with some features. The tool takes an input graph file and applies the selected feature technique to random communities with meaningful structures within the network for intitialization purpose of optimization problem with metaheuristic. 
 
 ## Features
-- Degree-based community detection
-- Connected component-based community detection
-- Influence spread-based community detection
-- Star nodes-based community detection
-- Random walk-based community detection
-- Node similarity-based community detection
-- Random node sampling-based community detection
-- Graph traversal-based community detection
+- Degree-based communities
+- Connected component-based communities
+- Influence spread-based communities
+- Star nodes-based communities
+- Random walk-based communities
+- Node similarity-based communities
+- Random node sampling-based communities
+- Graph cliques finding based communities
+- Graph traversal-based communities
+- Graph ego networks communities
 
 ## Requirements
 Make sure you have Python 3 installed along with the required libraries. You can install dependencies using:
