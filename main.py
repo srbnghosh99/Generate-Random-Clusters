@@ -15,6 +15,8 @@ import connected_component
 import influence_spread
 import degree_based
 import graph_traversal
+import clique_clusters
+import ego_clusters
 
 
     #     commid = commid + 1
@@ -44,15 +46,24 @@ def parse_args():
                                                help="Perform connected components community detection")
     parser_node_sampling = subparsers.add_parser('random_node_sampling',
                                                help="Perform connected components community detection")
-    parser_random_walk = subparsers.add_parser('graph_traversal',
+    parser_graph_travers = subparsers.add_parser('graph_traversal',
                                                help="Perform connected components community detection")
+    parser_clique_clusters = subparsers.add_parser('clique_clusters',
+                                                 help="Perform connected components community detection")
+    parser_ego_clusters = subparsers.add_parser('ego_clusters',
+                                                 help="Perform connected components community detection")
 
     parser_degree.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
     parser_cc.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
     parser_influence.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
     parser_star.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
     parser_random_walk.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
-
+    parser_node_sim.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
+    parser_node_sampling.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
+    parser_graph_travers.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
+    parser_clique_clusters.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
+    parser_ego_clusters.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
+    # parser_node_sim.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
 
     return parser.parse_args()
 
@@ -99,6 +110,15 @@ if __name__ == '__main__':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
         graph_traversal.bfs_communities(Graph)
+    elif args.command == 'clique_clusters':
+        print(f"Running star nodes based community detection on {args.inputfilename}")
+        # print(f"Output will be saved to {args.outputfilename}.")
+        clique_clusters.finding_cliques(Graph)
+    elif args.command == 'ego_clusters':
+        print(f"Running ego nets based community detection on {args.inputfilename}")
+        # print(f"Output will be saved to {args.outputfilename}.")
+        ego_clusters.finding_egos(Graph)
+
 
     else:
         print("No command selected. Use --help for usage information.")
