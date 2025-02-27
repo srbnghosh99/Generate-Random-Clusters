@@ -2,6 +2,7 @@ import networkx as nx
 import numpy as np
 from sklearn.cluster import KMeans
 from collections import defaultdict
+import pandas as pd
 
 def influence_spread_communities(G):
     # G = nx.karate_club_graph()  # Example dataset
@@ -32,9 +33,28 @@ def influence_spread_communities(G):
 
     # Print communities
 
-     communities = defaultdict(list)
-    for node, comm in node_communities.items():
-        communities[comm].append(node)
 
-    for comm, members in communities.items():
-        print(f"Community {comm + 1}: {members}")
+    communitydict = defaultdict(list)
+    for node, comm in node_communities.items():
+        communitydict[comm].append(node)
+
+    community_df = pd.DataFrame(communitydict.items(), columns=['Degree', 'Nodes'])
+    community_df = community_df.sort_values(by='Degree', ascending=False)
+    community_df['Community_id'] = community_df['Nodes'].apply(len)
+    community_df = community_df.groupby('Community_id')['Nodes'].apply(list).reset_index()
+    # print(community_df.keys)
+    for index, row in community_df.iterrows():
+        nodeslists = row['Nodes']
+        flatList = [element for innerList in nodeslists for element in innerList]
+        # print(flatList)
+        community_df.at[index, 'Nodes'] = flatList
+    community_df['len'] = community_df['Nodes'].apply(len)
+
+    # for comm, members in communitydict.items():
+    #     print(f"Community {comm + 1}: {members}")
+
+    # print(community_df)
+    return community_df
+
+
+    # return communities

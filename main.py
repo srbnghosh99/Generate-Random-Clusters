@@ -64,7 +64,6 @@ def parse_args():
     parser_clique_clusters.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
     parser_ego_clusters.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
     # parser_node_sim.add_argument('--outputfilename', type=str, required=True, help="Path to the output file")
-
     return parser.parse_args()
 
 # Press the green button in the gutter to run the script.
@@ -89,11 +88,14 @@ if __name__ == '__main__':
     elif args.command == 'influence_spread':
         print(f"Running influence spread based community detection on {args.inputfilename}")
         print(f"Output will be saved to {args.outputfilename}.")
-        influence_spread.influence_spread_communities(Graph)
+        df = influence_spread.influence_spread_communities(Graph)
+        # print(df)
+        df.to_csv(args.outputfilename,index = False)
     elif args.command == 'star_nodes':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         print(f"Output will be saved to {args.outputfilename}.")
-        star_nodes.star_nodes(Graph)
+        df = star_nodes.star_nodes(Graph)
+        df.to_csv(args.outputfilename, index=False)
     elif args.command == 'random_walk':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         print(f"Output will be saved to {args.outputfilename}.")
@@ -118,7 +120,8 @@ if __name__ == '__main__':
         print(f"Running ego nets based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
         ego_clusters.finding_egos(Graph)
-
+        df = ego_clusters.finding_egos(Graph)
+        df.to_csv(args.outputfilename, index=False)
 
     else:
         print("No command selected. Use --help for usage information.")
