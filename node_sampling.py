@@ -1,7 +1,7 @@
 import networkx as nx
 import random
 from collections import defaultdict
-
+import pandas as pd
 
 def sample_nodes_to_communities(graph, num_communities, nodes_per_community):
     nodes = list(graph.nodes())
@@ -21,7 +21,14 @@ def random_node_samp(G):
     num_communities = 30
     nodes_per_community = len(G.nodes) // num_communities
 
-    communities = sample_nodes_to_communities(G, num_communities, nodes_per_community)
+    communitydict = sample_nodes_to_communities(G, num_communities, nodes_per_community)
 
-    for community, nodes in communities.items():
+    for community, nodes in communitydict.items():
         print(f"Community {community}: {len(nodes)}")
+
+    community_df = pd.DataFrame(communitydict.items(), columns=['Community_id', 'Nodes'])
+    community_df['len'] = community_df['Nodes'].apply(len)
+    # community_df = community_df.reset_index()
+    # community_df = community_df.rename(columns={'index': 'Community_id'})
+
+    return community_df

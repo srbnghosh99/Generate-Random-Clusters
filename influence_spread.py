@@ -40,15 +40,18 @@ def influence_spread_communities(G):
 
     community_df = pd.DataFrame(communitydict.items(), columns=['Degree', 'Nodes'])
     community_df = community_df.sort_values(by='Degree', ascending=False)
-    community_df['Community_id'] = community_df['Nodes'].apply(len)
-    community_df = community_df.groupby('Community_id')['Nodes'].apply(list).reset_index()
+    community_df['len'] = community_df['Nodes'].apply(len)
+    community_df = community_df.groupby('len')['Nodes'].apply(list).reset_index()
     # print(community_df.keys)
     for index, row in community_df.iterrows():
         nodeslists = row['Nodes']
         flatList = [element for innerList in nodeslists for element in innerList]
         # print(flatList)
         community_df.at[index, 'Nodes'] = flatList
-    community_df['len'] = community_df['Nodes'].apply(len)
+    # community_df['len'] = community_df['Nodes'].apply(len)
+    community_df = community_df.reset_index()
+    community_df = community_df.rename(columns={'index': 'Community_id'})
+    community_df = community_df[['Community_id', 'len', 'Nodes']]
 
     # for comm, members in communitydict.items():
     #     print(f"Community {comm + 1}: {members}")
