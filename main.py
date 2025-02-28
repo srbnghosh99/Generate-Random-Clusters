@@ -103,11 +103,13 @@ if __name__ == '__main__':
     elif args.command == 'node_similarity':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
-        node_sim.detect_communities(Graph)
+        df = node_sim.detect_communities(Graph)
+        df.to_csv(args.outputfilename, index=False)
     elif args.command == 'random_node_sampling':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
-        node_sampling.random_node_samp(Graph)
+        df = node_sampling.random_node_samp(Graph)
+        df.to_csv(args.outputfilename, index=False)
     elif args.command == 'graph_traversal':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
@@ -115,7 +117,8 @@ if __name__ == '__main__':
     elif args.command == 'clique_clusters':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
-        clique_clusters.finding_cliques(Graph)
+        df = clique_clusters.finding_cliques(Graph)
+        df.to_csv(args.outputfilename, index=False)
     elif args.command == 'ego_clusters':
         print(f"Running ego nets based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")

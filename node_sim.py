@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
-
+import pandas as pd
 
 def compute_node_similarity_matrix(graph):
     nodes_list = list(graph.nodes())
@@ -38,4 +38,11 @@ def detect_communities(graph):
     for node, cluster in zip(nodes_list, clusters):
         communities[cluster].append(node)
 
-    print(communities)
+    # print(communities)
+
+    community_df = pd.DataFrame(communities.items(), columns=['Community_id', 'Nodes'])
+    community_df['len'] = community_df['Nodes'].apply(len)
+    # community_df = community_df.reset_index()
+    # community_df = community_df.rename(columns={'index': 'Community_id'})
+    print(community_df)
+    return community_df
