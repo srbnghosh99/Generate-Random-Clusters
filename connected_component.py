@@ -12,7 +12,9 @@ def connected_components(G):
         i += 1
 
     df = pd.DataFrame({
-        'Communty': commid,  # Keep Node_IDs for test set
-        'Nodes': nodeslist
+        'Community_id': commid,  # Keep Node_IDs for test set
+        'Nodes': nodeslist,
     })
+    df['len'] = df['Nodes'].apply(len)
     print(df)
+    return df

@@ -80,11 +80,13 @@ if __name__ == '__main__':
     if args.command == 'degree_based_comm':
         print(f"Running degree-based community detection on {args.inputfilename}")
         print(f"Output will be saved to {args.outputfilename}.")
-        degree_based.degree_based_comm(Graph)
+        df = degree_based.degree_based_comm(Graph)
+        df.to_csv(args.outputfilename, index=False)
     elif args.command == 'connected_components':
         print(f"Running connected component based community detection on {args.inputfilename}")
         print(f"Output will be saved to {args.outputfilename}.")
-        connected_component.connected_components(Graph)
+        df = connected_component.connected_components(Graph)
+        df.to_csv(args.outputfilename, index=False)
     elif args.command == 'influence_spread':
         print(f"Running influence spread based community detection on {args.inputfilename}")
         print(f"Output will be saved to {args.outputfilename}.")
@@ -99,7 +101,8 @@ if __name__ == '__main__':
     elif args.command == 'random_walk':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         print(f"Output will be saved to {args.outputfilename}.")
-        random_walk.random_walk2(Graph)
+        df = random_walk.random_walk2(Graph)
+        df.to_csv(args.outputfilename, index=False)
     elif args.command == 'node_similarity':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
@@ -113,7 +116,8 @@ if __name__ == '__main__':
     elif args.command == 'graph_traversal':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
-        graph_traversal.bfs_communities(Graph)
+        df = graph_traversal.bfs_communities(Graph)
+        df.to_csv(args.outputfilename, index=False)
     elif args.command == 'clique_clusters':
         print(f"Running star nodes based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
@@ -122,7 +126,6 @@ if __name__ == '__main__':
     elif args.command == 'ego_clusters':
         print(f"Running ego nets based community detection on {args.inputfilename}")
         # print(f"Output will be saved to {args.outputfilename}.")
-        ego_clusters.finding_egos(Graph)
         df = ego_clusters.finding_egos(Graph)
         df.to_csv(args.outputfilename, index=False)
 

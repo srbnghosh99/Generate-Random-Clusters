@@ -1,7 +1,7 @@
 import networkx as nx
 from collections import deque, defaultdict
 from tqdm import tqdm
-
+import pandas as pd
 def bfs_communities(graph):
     visited = set()
     communities = []
@@ -26,4 +26,27 @@ def bfs_communities(graph):
 
             communities.append(community)
 
-    return communities
+    communitydict = defaultdict(list)
+    nodelist = graph.nodes()
+    # print(nodelist)
+    communities = communities[0]
+    print(communities)
+    for node, community in zip(nodelist, communities):
+        community = int(community)
+        communitydict[community].append(node)
+
+    # for index in range(0,len(communities)):
+    #     print(index)
+    #     id = communities[index]
+    #     print('id', id)
+    #     node = nodelist[0]
+    #
+    #     print('node',node)
+    #     # communitydict[id].append(node)
+
+    community_df = pd.DataFrame(communitydict.items(), columns=['Community_ID', 'Nodes'])
+    # community_df.sorted
+    community_df=community_df.sort_values(by=['Community_ID'])
+    # df = pd.DataFrame({'Node': range(len(communities)), 'Community_ID': communities})
+    print(community_df)
+    return community_df

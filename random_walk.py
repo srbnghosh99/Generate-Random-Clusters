@@ -1,6 +1,8 @@
 import numpy as np
 import random
 from sklearn.cluster import KMeans
+from collections import deque, defaultdict
+import pandas as pd
 
 def random_walk(graph, start_node, walk_length):
     walk = [start_node]
@@ -44,10 +46,21 @@ def cluster_graph(graph, num_clusters, walk_length=10, num_walks=100):
 
     kmeans = KMeans(n_clusters=num_clusters)
     clusters = kmeans.fit_predict(walk_count_matrix)
-    return clusters
+    nodelist = graph.nodes()
+    communitydict = defaultdict(list)
+    for node, community in zip(nodelist, clusters):
+        community = int(community)
+        communitydict[community].append(node)
+    # print(clusters)
+    community_df = pd.DataFrame(communitydict.items(), columns=['Community_ID', 'Nodes'])
+    # community_df.sorted
+    community_df = community_df.sort_values(by=['Community_ID'])
+    print(community_df)
+    return community_df
 
 def random_walk2(G):
     # G = nx.karate_club_graph()  # Example graph
     num_clusters = 4
     clusters = cluster_graph(G, num_clusters)
-    print('clusters',clusters)
+    return clusters
+    # print('clusters',clusters)

@@ -12,8 +12,8 @@ def degree_based_comm(G):
         communitydict[i] = nodelist
     community_df = pd.DataFrame(communitydict.items(), columns=['Degree', 'Nodes'])
     community_df = community_df.sort_values(by='Degree', ascending=False)
-    community_df['Community_id'] = community_df['Nodes'].apply(len)
-    community_df = community_df.groupby('Community_id')['Nodes'].apply(list).reset_index()
+    # community_df['len'] = community_df['Nodes'].apply(len)
+    community_df = community_df.groupby('Degree')['Nodes'].apply(list).reset_index()
     # print(community_df.keys)
     for index, row in community_df.iterrows():
         nodeslists = row['Nodes']
@@ -21,7 +21,11 @@ def degree_based_comm(G):
         # print(flatList)
         community_df.at[index, 'Nodes'] = flatList
     community_df['len'] = community_df['Nodes'].apply(len)
-
+    community_df = community_df.reset_index()
+    community_df = community_df.rename(columns={'index': 'Community_id'})
+    community_df = community_df[['Community_id', 'len', 'Nodes','Degree']]
+    print(community_df)
+    return community_df
 
 
     # for index, row in community_df.iterrows():
@@ -34,6 +38,6 @@ def degree_based_comm(G):
         # print(flatList)
         # subgraph = G.subgraph(flatList)
         # print(f'No of nodes: {subgraph.number_of_nodes()}, No of edges: {subgraph.number_of_edges()}')
-    print(community_df.keys)
+    # print(community_df.keys)
     # community_df.to_csv('random_graph_communities.csv', index = False)
 
