@@ -8,6 +8,7 @@ import preprocess
 import os
 import glob
 from collections import defaultdict
+import argparse
 
 
 def initialization(master_solutions, G, stop):
@@ -93,10 +94,26 @@ def mutation(offspringsolutions):
     offsprings_fitness = fitness_calculation(offspringsolutions, G)
     print('Fitness of child After Mutation',offsprings_fitness)
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Read File and Process Data")
+    # Add a global argument for the input file
+    parser.add_argument("--inputdir", type=str, required=True, help="Path to the input directory")
+    parser.add_argument("--graphfile", type=str, required=True, help="Path to the input graph")
+    return parser.parse_args()
+    
 if __name__ == '__main__':
     master_solutions = []
-    directory = "/Users/shrabanighosh/github project/Generate-Random-Clusters/output/"
-    G = nx.read_edgelist('/Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist')
+    args = parse_args()
+    print(args.inputdir)
+    print(args.graphfile)
+    Graph = nx.read_edgelist(args.graphfile)
+
+    print(Graph.number_of_nodes(), Graph.number_of_edges())
+    directory = args.inputdir
+    G = nx.read_edgelist(args.graphfile)
+    
+    # directory = "/Users/shrabanighosh/github project/Generate-Random-Clusters/output/"
+    # G = nx.read_edgelist('/Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist')
     files = glob.glob(directory + "/*.csv")
     for file in files:
         solution = preprocess.process_solutions(file,G)
