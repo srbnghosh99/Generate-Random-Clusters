@@ -106,11 +106,12 @@ if __name__ == '__main__':
     args = parse_args()
     print(args.inputdir)
     print(args.graphfile)
-    Graph = nx.read_edgelist(args.graphfile)
+    # Graph = nx.read_edgelist(args.graphfile)
+    G = nx.read_edgelist(args.graphfile)
 
     print(Graph.number_of_nodes(), Graph.number_of_edges())
     directory = args.inputdir
-    G = nx.read_edgelist(args.graphfile)
+    
     
     # directory = "/Users/shrabanighosh/github project/Generate-Random-Clusters/output/"
     # G = nx.read_edgelist('/Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist')
