@@ -9,18 +9,12 @@ import os
 import glob
 from collections import defaultdict
 import argparse
-<<<<<<< HEAD
-=======
 import sys
->>>>>>> 3621721 (ga modified file)
 
 
 master_populations = []
 global iteration
 stoppping_criteria = 10
-
-# max_iterations = 8  # Set a max iteration limit
-# iteration = 0  # Global variable to track iterations
 
 
 def process_population(master_populations, G):
@@ -182,21 +176,17 @@ def parse_args():
     return parser.parse_args()
     
 if __name__ == '__main__':
-<<<<<<< HEAD
     master_solutions = []
     args = parse_args()
     print(args.inputdir)
     print(args.graphfile)
     # Graph = nx.read_edgelist(args.graphfile)
     G = nx.read_edgelist(args.graphfile)
-
     print(Graph.number_of_nodes(), Graph.number_of_edges())
     directory = args.inputdir
     
-    
     # directory = "/Users/shrabanighosh/github project/Generate-Random-Clusters/output/"
     # G = nx.read_edgelist('/Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist')
-=======
 
     args = parse_args()
     print(args.inputdir)
@@ -208,7 +198,6 @@ if __name__ == '__main__':
     # directory = args.inputdir
     G = nx.read_edgelist('/Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist')
     # G = nx.read_edgelist(args.graphfile)
->>>>>>> 3621721 (ga modified file)
     files = glob.glob(directory + "/*.csv")
     for file in files:
         solution = preprocess.process_solutions(file,G)
