@@ -10,17 +10,34 @@ import glob
 from collections import defaultdict
 import argparse
 import sys
+import pickle
 
 
 master_populations = []
 global iteration
-stoppping_criteria = 10
+stoppping_criteria = 50
 
+# max_iterations = 8  # Set a max iteration limit
+# iteration = 0  # Global variable to track iterations
+
+def write_to_population(master_populations):
+    with open('populations', 'wb') as fp:
+        pickle.dump(master_populations, fp)
+    return
+
+
+def write_to_file(text):
+    # if os.path.exists("output.txt"):
+    #     os.remove("output.txt")
+    with open("output.txt", "a") as file:
+        file.write(text + "\n")
 
 def process_population(master_populations, G):
     # global iteration
     if len(master_populations) >= stoppping_criteria:
         print("Reached maximum iterations.")
+
+        write_to_population(master_populations)
         return
 
     # Perform initialization, crossover, mutation, etc., in order
@@ -43,11 +60,7 @@ def initialization(master_populations, G):
 
 
 
-def write_to_file(text):
-    # if os.path.exists("output.txt"):
-    #     os.remove("output.txt")
-    with open("output.txt", "a") as file:
-        file.write(text + "\n")
+
 
 def initialization(master_populations,G):
     print("initialization")
@@ -142,7 +155,7 @@ def mutation(G, offspringsolutions, parent_fitness):
 
 
     if min(offsprings_fitness) > min(parent_fitness):
-        print(f'{min(offsprings_fitness)} > {min(parent_fitness)}')
+        # print(f'{min(offsprings_fitness)} > {min(parent_fitness)}')
         # Keep children and remove the weakest parents
         # population.remove(min(population))  # Remove worst solution
         write_to_file("Added")
@@ -168,25 +181,7 @@ def parse_args():
     parser.add_argument("--graphfile", type=str, required=True, help="Path to the input graph")
     return parser.parse_args()
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Read File and Process Data")
-    # Add a global argument for the input file
-    parser.add_argument("--inputdir", type=str, required=True, help="Path to the input directory")
-    parser.add_argument("--graphfile", type=str, required=True, help="Path to the input graph")
-    return parser.parse_args()
-    
 if __name__ == '__main__':
-    master_solutions = []
-    args = parse_args()
-    print(args.inputdir)
-    print(args.graphfile)
-    # Graph = nx.read_edgelist(args.graphfile)
-    G = nx.read_edgelist(args.graphfile)
-    print(Graph.number_of_nodes(), Graph.number_of_edges())
-    directory = args.inputdir
-    
-    # directory = "/Users/shrabanighosh/github project/Generate-Random-Clusters/output/"
-    # G = nx.read_edgelist('/Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist')
 
     args = parse_args()
     print(args.inputdir)
@@ -202,8 +197,13 @@ if __name__ == '__main__':
     for file in files:
         solution = preprocess.process_solutions(file,G)
         master_populations.append(solution)
-    print("Number of populations",len(master_populations))
+    print("Number of initial populations",len(master_populations))
     if os.path.exists("output.txt"):
         os.remove("output.txt")
+    if os.path.exists("populations"):
+        os.remove("populations")
     process_population(master_populations,G)
+
+    # with open('outfile', 'rb') as fp:
+    #     itemlist = pickle.load(fp)
 
