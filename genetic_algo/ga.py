@@ -1,3 +1,5 @@
+from math import floor
+
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,11 +13,13 @@ from collections import defaultdict
 import argparse
 import sys
 import pickle
+from community import community_louvain
 
 
 master_populations = []
-global iteration
-stoppping_criteria = 50
+
+iteration = 0
+stoppping_criteria = 100
 
 # max_iterations = 8  # Set a max iteration limit
 # iteration = 0  # Global variable to track iterations
@@ -26,46 +30,37 @@ def write_to_population(master_populations):
     return
 
 
-def write_to_file(text):
+def write_to_file(outfile, text):
     # if os.path.exists("output.txt"):
     #     os.remove("output.txt")
-    with open("output.txt", "a") as file:
+    with open(outfile, "a") as file:
         file.write(text + "\n")
 
-def process_population(master_populations, G):
-    # global iteration
+def process_population(master_populations, G,crossover_nodes, mutation_nodes, outfile):
+    global iteration
+    iteration += 1
     if len(master_populations) >= stoppping_criteria:
         print("Reached maximum iterations.")
-
+        print('iteration',iteration)
         write_to_population(master_populations)
         return
 
     # Perform initialization, crossover, mutation, etc., in order
     fitness_list = fitness_calculation(master_populations, G)
-    offspringsolutions, parent_fitness = crossover(G, fitness_list, no0fnodes=5)
+    offspringsolutions, parent_fitness = crossover(G, fitness_list, crossover_nodes,outfile)
 
     # Call the mutation function after crossover
-    master_populations = mutation(G, offspringsolutions, parent_fitness)
+
+
+    # print(iteration)
+    master_populations = mutation(G, offspringsolutions, parent_fitness, mutation_nodes,outfile)
 
 
     # iteration += 1  # Increment iteration after each process
     # Call the main process function again if not reached the max iterations
-    process_population(master_populations, G)
+    process_population(master_populations, G,crossover_nodes, mutation_nodes,outfile)
 
 
-def initialization(master_populations, G):
-    # Initialize the process, which can call crossover and mutation
-    process_population(master_populations, G)
-
-
-
-
-
-
-def initialization(master_populations,G):
-    print("initialization")
-    fitness_list = fitness_calculation(master_populations,G)
-    # crossover(G, fitness_list, no0fnodes = 5)
 
 def fitness_calculation(master_populations,G):
 
@@ -89,7 +84,7 @@ def fitness_calculation(master_populations,G):
     return fitness_list
 
 
-def crossover(G, fitness_list, no0fnodes):
+def crossover(G, fitness_list, crossover_nodes,outfile):
     # print("Crossover")
     """Performs one-point crossover between two randomly selected solutions."""
 
@@ -105,7 +100,7 @@ def crossover(G, fitness_list, no0fnodes):
     # Pick two parents with the highest fitness values
     index_of_parent1, parent1_fitness = indexed_fitness[0]
     index_of_parent2, parent2_fitness = indexed_fitness[1]
-    write_to_file(f'\nParent fitness: {parent1_fitness}, {parent2_fitness}')
+    write_to_file(outfile,f'\nParent fitness: {parent1_fitness}, {parent2_fitness}')
     size_of_graph = G.number_of_nodes()
     single_point_crossover = random.randint(0, size_of_graph - 1)
 
@@ -114,6 +109,9 @@ def crossover(G, fitness_list, no0fnodes):
     parent2 = master_populations[index_of_parent2][:]
 
     # Extract and swap sublists
+    # no0fnodes = 5
+    no0fnodes = floor((int(crossover_nodes) * G.number_of_nodes())/100)
+    # print('no0fnodes',no0fnodes)
     list1 = parent1[single_point_crossover:single_point_crossover + no0fnodes]
     list2 = parent2[single_point_crossover:single_point_crossover + no0fnodes]
     parent1[single_point_crossover:single_point_crossover + no0fnodes] = list2
@@ -132,12 +130,13 @@ def crossover(G, fitness_list, no0fnodes):
 
 
 
-def mutation(G, offspringsolutions, parent_fitness):
-    # iteration =+ 1
-    # print('mutation',iteration)
+def mutation(G, offspringsolutions, parent_fitness,no_of_moves,outfile):
     # print("Mutation")
     size_of_graph = len(offspringsolutions[0])
-    no_of_moves = 2
+    # no_of_moves = 5
+
+    no_of_moves = int(no_of_moves)
+    # print(no_of_moves)
     for move in range(0,no_of_moves):
         for offspring in offspringsolutions:
             # Pick a random node from each and swap
@@ -151,27 +150,28 @@ def mutation(G, offspringsolutions, parent_fitness):
     # print(offspringsolutions)
     offsprings_fitness = fitness_calculation(offspringsolutions, G)
     # write_to_file("Your text here")
-    write_to_file(f'Fitness of child After Mutation,{offsprings_fitness}')
+    write_to_file(outfile,f'Fitness of child After Mutation,{offsprings_fitness}')
 
 
-    if min(offsprings_fitness) > min(parent_fitness):
-        # print(f'{min(offsprings_fitness)} > {min(parent_fitness)}')
+    # if min(offsprings_fitness) > min(parent_fitness):
+    if (offsprings_fitness[0]) > (parent_fitness[0]):
+        print(f'offspring,{(offsprings_fitness[0])} > parent {(parent_fitness[0])}')
+        # print(f'offspring,{min(offsprings_fitness)} > parent {min(parent_fitness)}')
+        # min_index = offsprings_fitness.index(min(offsprings_fitness))
         # Keep children and remove the weakest parents
         # population.remove(min(population))  # Remove worst solution
-        write_to_file("Added")
-        # write_to_file("\n")
+        write_to_file(outfile,"Added")
         master_populations.append(offspringsolutions[0])
+        # print(master_populations[min_index])
+        # master_populations.append(offspringsolutions[1])
+    if (offsprings_fitness[1]) > (parent_fitness[1]):
+        print(f'offspring,{(offsprings_fitness[1])} > parent {(parent_fitness[1])}')
+        write_to_file(outfile, "Added")
         master_populations.append(offspringsolutions[1])
-        return master_populations
-    else:
-        # Keep parents and discard children
-        # write_to_file("Did not Added")
-        return master_populations
-        # pass  # No change in population
+        # return master_populations
 
-    # if (len(master_populations) == stoppping_criteria):
-    #     sys.exit("Terminating program from recursion!")
-    # initialization(master_populations, G)
+    return master_populations
+
 
 
 def parse_args():
@@ -179,6 +179,9 @@ def parse_args():
     # Add a global argument for the input file
     parser.add_argument("--inputdir", type=str, required=True, help="Path to the input directory")
     parser.add_argument("--graphfile", type=str, required=True, help="Path to the input graph")
+    parser.add_argument("--crossover_nodes", type=str, required=True, help="Number of nodes in the crossover stage")
+    parser.add_argument("--mutation_nodes", type=str, required=True, help="Number of nodes in the mutation stage")
+    parser.add_argument("--outputfile", type=str, required=True, help="Output file name")
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -186,23 +189,31 @@ if __name__ == '__main__':
     args = parse_args()
     print(args.inputdir)
     print(args.graphfile)
+    print(args.crossover_nodes)
+    print(args.mutation_nodes)
+    print(args.outputfile)
     Graph = nx.read_edgelist(args.graphfile)
+    # G = nx.read_weighted_edgelist(inputfile)
+    # compute the best partition
 
-    write_to_file(f'number of nodes {Graph.number_of_nodes()} and number of edges {Graph.number_of_edges()}')
+
+    write_to_file(args.outputfile,f'number of nodes {Graph.number_of_nodes()} and number of edges {Graph.number_of_edges()}')
     directory = "/Users/shrabanighosh/github project/Generate-Random-Clusters/output/"
     # directory = args.inputdir
     G = nx.read_edgelist('/Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist')
-    # G = nx.read_edgelist(args.graphfile)
+    print("standard method label propagation modularity value", nx.community.modularity(G, nx.community.label_propagation_communities(G)))
+    print("standard method louvain modularity value", nx.community.modularity(G,nx.community.louvain_communities(G, seed=123)))
+    # G = nx.read_edgelist(args.graphfile)p
     files = glob.glob(directory + "/*.csv")
     for file in files:
         solution = preprocess.process_solutions(file,G)
         master_populations.append(solution)
     print("Number of initial populations",len(master_populations))
-    if os.path.exists("output.txt"):
-        os.remove("output.txt")
+    if os.path.exists(args.outputfile):
+        os.remove(args.outputfile)
     if os.path.exists("populations"):
         os.remove("populations")
-    process_population(master_populations,G)
+    process_population(master_populations,G,args.crossover_nodes,args.mutation_nodes, args.outputfile)
 
     # with open('outfile', 'rb') as fp:
     #     itemlist = pickle.load(fp)
