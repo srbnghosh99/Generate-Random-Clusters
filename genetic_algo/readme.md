@@ -7,8 +7,6 @@ Generate community populations based on 10 feature based populations of a graph.
 - `--mutation_nodes` : Number of ndoes want to be swapped at the mutations stage
 - `--outputfile` : Path to save the output file
 
-- python3 main.py --inputdir /Users/shrabanighosh/github\ project/Generate-Random-Clusters/output/ --graphfile /Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist --crossover_nodes 15 --mutation_nodes 5 --outputfile output.txt
-
 
 ## Run code with script file
 ```bash
