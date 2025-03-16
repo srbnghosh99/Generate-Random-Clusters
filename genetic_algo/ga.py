@@ -14,25 +14,91 @@ import argparse
 import sys
 import pickle
 from community import community_louvain
+<<<<<<< HEAD
 
+=======
+import bson
+>>>>>>> 90d6dd7 (Add modified files”)
 
 master_populations = []
 
 iteration = 0
+<<<<<<< HEAD
 stoppping_criteria = 100
+=======
+stoppping_criteria = 1000
+>>>>>>> 90d6dd7 (Add modified files”)
 
 # max_iterations = 8  # Set a max iteration limit
 # iteration = 0  # Global variable to track iterations
 
-def write_to_population(master_populations):
-    with open('populations', 'wb') as fp:
-        pickle.dump(master_populations, fp)
-    return
 
 
+<<<<<<< HEAD
 def write_to_file(outfile, text):
     # if os.path.exists("output.txt"):
     #     os.remove("output.txt")
+=======
+
+# def prunning(master_populations):
+def select_solutions(master_populations,G, retain_ratio=0.2, prob_ratio=0.6, diverse_count=10):
+    # fitness_list = []
+    # for solution in master_populations:
+    fitness_list = (fitness_calculation(master_populations,G))
+    df = pd.DataFrame({'Solution':master_populations,'Fitness_value':fitness_list})
+    df = df.sort_values(by = ['Fitness_value'],ascending = False)
+    df = df[df.Fitness_value > 0]
+    # df = df.drop(by = ['Fitness_value'] < 1)
+    print(df)
+
+    # sorted_indices = np.argsort(fitness_values)[::-1]  # Indices of sorted fitness
+    sorted_solutions = df['Solution'].tolist()
+    sorted_fitness = df['Fitness_value'].tolist()
+
+    # 1️⃣ **Top 20% Elitism**
+    retain_count = max(1, int(len(sorted_solutions) * retain_ratio))
+    selected_solutions = sorted_solutions[:retain_count]
+    print(len(selected_solutions))
+
+    # # 2️⃣ **Probabilistic Selection (Roulette Wheel)**
+    remaining_solutions = sorted_solutions[retain_count:]
+    remaining_fitness = sorted_fitness[retain_count:]
+    if len(remaining_fitness) > 0:  # Avoid division by zero
+        fitness_probs = remaining_fitness / np.sum(remaining_fitness)  # Normalize probabilities
+        prob_count = max(1, int(len(sorted_solutions) * prob_ratio))
+        chosen_indices = np.random.choice(len(remaining_solutions), size=min(prob_count, len(remaining_solutions)),
+                                          p=fitness_probs, replace=False)
+        selected_solutions += [remaining_solutions[i] for i in chosen_indices]
+    print(len(selected_solutions))
+
+    # 3️⃣ **Diversity Selection (Random)**
+    diverse_count = min(diverse_count, len(remaining_solutions))
+    selected_solutions += random.sample(remaining_solutions, diverse_count)
+    print(len(selected_solutions))
+    # return selected_solutions
+    file = 'out.bson'
+    save_solutions(file,selected_solutions)
+
+
+def load_solutions(filename):
+    """Load list of solutions from a BSON file."""
+    with open(filename, "rb") as f:
+        data = bson.decode(f.read())
+    return data["solutions"]
+
+def save_solutions(filename,master_populations):
+    """Save list of solutions to a BSON file."""
+    with open(filename, "wb") as f:
+        f.write(bson.encode({"solutions": master_populations}))
+    # with open('populations', 'wb') as fp:
+    #     pickle.dump(master_populations, fp)
+    # return
+
+
+def write_to_file(outfile, text):
+    if os.path.exists("output.txt"):
+        os.remove("output.txt")
+>>>>>>> 90d6dd7 (Add modified files”)
     with open(outfile, "a") as file:
         file.write(text + "\n")
 
@@ -41,8 +107,19 @@ def process_population(master_populations, G,crossover_nodes, mutation_nodes, ou
     iteration += 1
     if len(master_populations) >= stoppping_criteria:
         print("Reached maximum iterations.")
+<<<<<<< HEAD
         print('iteration',iteration)
         write_to_population(master_populations)
+=======
+        print('Number of iteration',iteration)
+        print("Number of solutions",len(master_populations))
+        # prunning(master_populations)
+        select_solutions(master_populations,G)
+
+        # save_solutions("solutions.bson", master_populations)
+        # loaded_solutions = load_solutions("solutions.bson")
+        # print(len(loaded_solutions))
+>>>>>>> 90d6dd7 (Add modified files”)
         return
 
     # Perform initialization, crossover, mutation, etc., in order
@@ -169,9 +246,14 @@ def mutation(G, offspringsolutions, parent_fitness,no_of_moves,outfile):
         write_to_file(outfile, "Added")
         master_populations.append(offspringsolutions[1])
         # return master_populations
+<<<<<<< HEAD
 
     return master_populations
 
+=======
+
+    return master_populations
+>>>>>>> 90d6dd7 (Add modified files”)
 
 
 def parse_args():
@@ -204,15 +286,28 @@ if __name__ == '__main__':
     print("standard method label propagation modularity value", nx.community.modularity(G, nx.community.label_propagation_communities(G)))
     print("standard method louvain modularity value", nx.community.modularity(G,nx.community.louvain_communities(G, seed=123)))
     # G = nx.read_edgelist(args.graphfile)p
+<<<<<<< HEAD
     files = glob.glob(directory + "/*.csv")
     for file in files:
         solution = preprocess.process_solutions(file,G)
         master_populations.append(solution)
     print("Number of initial populations",len(master_populations))
+=======
+    # files = glob.glob(directory + "/*.csv")
+    # for file in files:
+    #     solution = preprocess.process_solutions(file,G)
+    #     master_populations.append(solution)
+    # print("Number of initial populations",len(master_populations))
+>>>>>>> 90d6dd7 (Add modified files”)
     if os.path.exists(args.outputfile):
         os.remove(args.outputfile)
     if os.path.exists("populations"):
         os.remove("populations")
+<<<<<<< HEAD
+=======
+
+    master_populations = load_solutions('out.bson')
+>>>>>>> 90d6dd7 (Add modified files”)
     process_population(master_populations,G,args.crossover_nodes,args.mutation_nodes, args.outputfile)
 
     # with open('outfile', 'rb') as fp:
