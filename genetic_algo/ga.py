@@ -1,5 +1,4 @@
 from math import floor
-
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,20 +15,21 @@ import pickle
 from community import community_louvain
 import bson
 from tqdm import tqdm
+import time
 
 master_populations = []
 
 iteration = 0
 stoppping_criteria = 10000
 
-# max_iterations = 8  # Set a max iteration limit
+max_iterations = 30000  # Set a max iteration limit
 # iteration = 0  # Global variable to track iterations
 
 
 
 
 # def prunning(master_populations):
-def select_solutions(master_populations,G, retain_ratio=0.2, prob_ratio=0.6, diverse_count=10):
+def select_solutions(master_populations,G,outfile, retain_ratio=0.2, prob_ratio=0.6, diverse_count=10):
     # fitness_list = []
     # for solution in master_populations:
     fitness_list = (fitness_calculation(master_populations,G))
@@ -64,7 +64,8 @@ def select_solutions(master_populations,G, retain_ratio=0.2, prob_ratio=0.6, div
     selected_solutions += random.sample(remaining_solutions, diverse_count)
     print(len(selected_solutions))
     # return selected_solutions
-    file = 'out.bson'
+    outfile = os.path.splitext(outfile)[0]
+    file = outfile + '.bson'
     save_solutions(file,selected_solutions)
 
 
@@ -76,6 +77,7 @@ def load_solutions(filename):
 
 def save_solutions(filename,master_populations):
     """Save list of solutions to a BSON file."""
+
     with open(filename, "wb") as f:
         f.write(bson.encode({"solutions": master_populations}))
     # with open('populations', 'wb') as fp:
@@ -84,62 +86,70 @@ def save_solutions(filename,master_populations):
 
 
 def write_to_file(outfile, text):
-    if os.path.exists("output.txt"):
-        os.remove("output.txt")
     with open(outfile, "a") as file:
         file.write(text + "\n")
 
-def process_population(master_populations, G, crossover_nodes, mutation_nodes, outfile):
+def process_population(master_populations, G, fitness_list, crossover_nodes, mutation_nodes, outfile):
     global iteration
-    with tqdm(total=stoppping_criteria, desc="Genetic Algorithm Progress", dynamic_ncols=True) as pbar:
+    start_time = time.time()
+
+    with tqdm(total=max_iterations, desc="Genetic Algorithm Progress", dynamic_ncols=True) as pbar:
+
 
         while len(master_populations) <= stoppping_criteria:
             # while len(master_populations) < stopping_criteria and iteration < max_iterations:
 
             iteration += 1
+            if iteration == max_iterations:
+                print("Reached maximum iteration, no solution found.")
+                break
             # print(f"Iteration: {iteration}, Population Size: {len(master_populations)}")
 
-            fitness_list = fitness_calculation(master_populations, G)
-            offspringsolutions, parent_fitness = crossover(G, fitness_list, crossover_nodes, outfile)
-            master_populations = mutation(G, offspringsolutions, parent_fitness, mutation_nodes, outfile)
+            # fitness_list = fitness_calculation(master_populations, G)
+            offspringsolutions, parent_fitness = crossover(G, fitness_list, crossover_nodes,outfile)
+            master_populations, fitness_list = mutation(G, offspringsolutions, fitness_list, parent_fitness, mutation_nodes,outfile)
+
             pbar.update(1)
             # master_populations (mutation(G, offspringsolutions, parent_fitness, mutation_nodes, outfile))
 
-        print("Reached maximum iterations.")
+        print("Reached maximum solutions.")
         print('Number of iteration', iteration)
         print("Number of solutions", len(master_populations))
-        select_solutions(master_populations, G)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"The Processing population took {duration} seconds to run.")
+        select_solutions(master_populations, G,outfile)
 
 
-def process_population_old(master_populations, G,crossover_nodes, mutation_nodes, outfile):
-    global iteration
-    iteration += 1
-    if len(master_populations) >= stoppping_criteria:
-        print("Reached maximum iterations.")
-        print('Number of iteration',iteration)
-        print("Number of solutions",len(master_populations))
-        # prunning(master_populations)
-        select_solutions(master_populations,G)
-
-        # save_solutions("solutions.bson", master_populations)
-        # loaded_solutions = load_solutions("solutions.bson")
-        # print(len(loaded_solutions))
-        return
-
-    # Perform initialization, crossover, mutation, etc., in order
-    fitness_list = fitness_calculation(master_populations, G)
-    offspringsolutions, parent_fitness = crossover(G, fitness_list, crossover_nodes,outfile)
-
-    # Call the mutation function after crossover
-
-
-    # print(iteration)
-    master_populations = mutation(G, offspringsolutions, parent_fitness, mutation_nodes,outfile)
-
-
-    # iteration += 1  # Increment iteration after each process
-    # Call the main process function again if not reached the max iterations
-    process_population(master_populations, G,crossover_nodes, mutation_nodes,outfile)
+# def process_population_old(master_populations, G,fitness_list, crossover_nodes, mutation_nodes, outfile):
+#     global iteration
+#     iteration += 1
+#     if len(master_populations) >= stoppping_criteria:
+#         print("Reached maximum iterations.")
+#         print('Number of iteration',iteration)
+#         print("Number of solutions",len(master_populations))
+#         # prunning(master_populations)
+#         select_solutions(master_populations,G)
+#
+#         # save_solutions("solutions.bson", master_populations)
+#         # loaded_solutions = load_solutions("solutions.bson")
+#         # print(len(loaded_solutions))
+#         return
+#
+#     # Perform initialization, crossover, mutation, etc., in order
+#     # fitness_list = fitness_calculation(master_populations, G)
+#     offspringsolutions, offsprings_fitness, parent_fitness = crossover(G, fitness_list, crossover_nodes,outfile)
+#
+#     # Call the mutation function after crossover
+#
+#
+#     # print(iteration)
+#     master_populations, fitness_list = mutation(G, offspringsolutions, offsprings_fitness, fitness_list, parent_fitness, mutation_nodes,outfile)
+#
+#
+#     # iteration += 1  # Increment iteration after each process
+#     # Call the main process function again if not reached the max iterations
+#     process_population(master_populations, G,fitness_list, crossover_nodes, mutation_nodes,outfile)
 
 
 
@@ -181,7 +191,7 @@ def crossover(G, fitness_list, crossover_nodes,outfile):
     # Pick two parents with the highest fitness values
     index_of_parent1, parent1_fitness = indexed_fitness[0]
     index_of_parent2, parent2_fitness = indexed_fitness[1]
-    write_to_file(outfile,f'\nParent fitness: {parent1_fitness}, {parent2_fitness}')
+    # write_to_file(outfile,f'\nParent fitness: {parent1_fitness}, {parent2_fitness}')
     size_of_graph = G.number_of_nodes()
     single_point_crossover = random.randint(0, size_of_graph - 1)
 
@@ -202,7 +212,7 @@ def crossover(G, fitness_list, crossover_nodes,outfile):
     offspringsolutions = [parent1, parent2]
 
     # print('offspringsolutions', len(parent1), len(parent2))
-    offsprings_fitness = fitness_calculation(offspringsolutions, G)
+    # offsprings_fitness = fitness_calculation(offspringsolutions, G)
     return offspringsolutions, [parent1_fitness,parent2_fitness]
     # print('Fitness of child After crossover', offsprings_fitness)
 
@@ -211,7 +221,7 @@ def crossover(G, fitness_list, crossover_nodes,outfile):
 
 
 
-def mutation(G, offspringsolutions, parent_fitness,no_of_moves,outfile):
+def mutation(G, offspringsolutions, fitness_list, parent_fitness,no_of_moves,outfile):
     # print("Mutation")
     size_of_graph = len(offspringsolutions[0])
     # no_of_moves = 5
@@ -230,29 +240,35 @@ def mutation(G, offspringsolutions, parent_fitness,no_of_moves,outfile):
 
     # print(offspringsolutions)
     offsprings_fitness = fitness_calculation(offspringsolutions, G)
-    # write_to_file("Your text here")
-    write_to_file(outfile,f'Fitness of child After Mutation,{offsprings_fitness}')
+    if offsprings_fitness[0]> .571136 or offsprings_fitness[1]> .571136:
+        print("Found Solution")
+        write_to_file(outfile,f'Found Solution')
+        return
 
 
     # if min(offsprings_fitness) > min(parent_fitness):
     if (offsprings_fitness[0]) > (parent_fitness[0]):
         # print(f'offspring,{(offsprings_fitness[0])} > parent {(parent_fitness[0])}')
-        print(f"Population Size: {len(master_populations)}")
+        write_to_file(outfile,f'offspring,{(offsprings_fitness[0])} > parent {(parent_fitness[0])}')
+        # print(f"Population Size: {len(master_populations)}")
         # print(f'offspring,{min(offsprings_fitness)} > parent {min(parent_fitness)}')
         # min_index = offsprings_fitness.index(min(offsprings_fitness))
         # Keep children and remove the weakest parents
         # population.remove(min(population))  # Remove worst solution
-        write_to_file(outfile,"Added")
+        # write_to_file(outfile,"Added")
         master_populations.append(offspringsolutions[0])
+        fitness_list.append(offsprings_fitness[0])
         # print(master_populations[min_index])
         # master_populations.append(offspringsolutions[1])
     if (offsprings_fitness[1]) > (parent_fitness[1]):
         # print(f'offspring,{(offsprings_fitness[1])} > parent {(parent_fitness[1])}')
-        write_to_file(outfile, "Added")
+        write_to_file(outfile, f'offspring,{(offsprings_fitness[1])} > parent {(parent_fitness[1])}')
+        # write_to_file(outfile, "Added")
         master_populations.append(offspringsolutions[1])
+        fitness_list.append(offsprings_fitness[1])
         # return master_populations
-
-    return master_populations
+    return master_populations, fitness_list
+    # return master_populations
 
 
 def parse_args():
@@ -281,9 +297,10 @@ if __name__ == '__main__':
     write_to_file(args.outputfile,f'number of nodes {Graph.number_of_nodes()} and number of edges {Graph.number_of_edges()}')
     directory = "/Users/shrabanighosh/github project/Generate-Random-Clusters/output/"
     # directory = args.inputdir
-    # G = nx.read_edgelist('/Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist')
-    print("standard method label propagation modularity value", nx.community.modularity(G, nx.community.label_propagation_communities(G)))
-    print("standard method louvain modularity value", nx.community.modularity(G,nx.community.louvain_communities(G, seed=123)))
+    G = nx.read_edgelist('/Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist')
+    # print("standard method label propagation modularity value", nx.community.modularity(G, nx.community.label_propagation_communities(G)))
+    # print("standard method louvain modularity value", nx.community.modularity(G,nx.community.louvain_communities(G, seed=123)))
+
     G = nx.read_edgelist(args.graphfile)
     # files = glob.glob(directory + "/*.csv")
     # for file in files:
@@ -295,8 +312,15 @@ if __name__ == '__main__':
     # if os.path.exists("populations"):
     #     os.remove("populations")
 
-    # master_populations = load_solutions('out.bson')
-    process_population(master_populations,G,args.crossover_nodes,args.mutation_nodes, args.outputfile)
+    master_populations = load_solutions('output3.bson')
+    if os.path.exists(args.outputfile):
+        os.remove(args.outputfile)
+    fitness_list = fitness_calculation(master_populations, G)
+    print('fitness_list',len(fitness_list))
+    write_to_file(args.outputfile,f'standard method label propagation modularity value, {nx.community.modularity(G, nx.community.label_propagation_communities(G))}')
+    write_to_file(args.outputfile,f'standard method louvain modularity value,{nx.community.modularity(G, nx.community.louvain_communities(G, seed=123))}')
+
+    process_population(master_populations,G,fitness_list,args.crossover_nodes,args.mutation_nodes, args.outputfile)
 
     # with open('outfile', 'rb') as fp:
     #     itemlist = pickle.load(fp)
