@@ -1,7 +1,7 @@
 import networkx as nx
 from collections import defaultdict
 import pandas as pd
-
+import ast
 def update_dict_with_list(my_dict, key, values):
     # Ensure the key exists in the dictionary with a list
     if key not in my_dict:
@@ -24,12 +24,17 @@ def finding_egos(G):
     #     # print(communities[comm])
     #     print(f"Community {comm + 1}: {(members)}")
     # print(communitydict.keys)
-    community_df = pd.DataFrame(communitydict.items(), columns=['Key', 'Nodes'])
-    community_df['len'] = community_df['Nodes'].apply(len)
+    community_df = pd.DataFrame(communitydict.items(), columns=['Community_id', 'Nodes'])
+    community_df = community_df.rename(columns={'Community_id': 'len'})
     community_df = community_df.reset_index()
     community_df = community_df.rename(columns={'index': 'Community_id'})
-    community_df = community_df[['Community_id','len','Nodes']]
-    print(community_df)
+    # community_df['Nodes'] = community_df['Nodes'].apply(ast.literal_eval)
+    # community_df['len'] = community_df['Nodes'].apply(len)
+    # print(community_df)
+    # community_df = community_df.reset_index()
+    # community_df = community_df.rename(columns={'index': 'Community_id'})
+    # community_df = community_df[['Community_id','len','Nodes']]
+
     return community_df
 
 

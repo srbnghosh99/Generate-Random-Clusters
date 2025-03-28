@@ -44,9 +44,9 @@ def bfs_communities(graph):
     #     print('node',node)
     #     # communitydict[id].append(node)
 
-    community_df = pd.DataFrame(communitydict.items(), columns=['Community_ID', 'Nodes'])
+    community_df = pd.DataFrame(communitydict.items(), columns=['Community_id', 'Nodes'])
     # community_df.sorted
-    community_df=community_df.sort_values(by=['Community_ID'])
+    community_df=community_df.sort_values(by=['Community_id'])
     # df = pd.DataFrame({'Node': range(len(communities)), 'Community_ID': communities})
     print(community_df)
     return community_df

@@ -52,9 +52,9 @@ def cluster_graph(graph, num_clusters, walk_length=10, num_walks=100):
         community = int(community)
         communitydict[community].append(node)
     # print(clusters)
-    community_df = pd.DataFrame(communitydict.items(), columns=['Community_ID', 'Nodes'])
+    community_df = pd.DataFrame(communitydict.items(), columns=['Community_id', 'Nodes'])
     # community_df.sorted
-    community_df = community_df.sort_values(by=['Community_ID'])
+    community_df = community_df.sort_values(by=['Community_id'])
     print(community_df)
     return community_df
 
