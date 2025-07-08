@@ -1,1 +1,1 @@
-python3 main.py --inputdir /Users/shrabanighosh/github\ project/Generate-Random-Clusters/output/ --graphfile /Users/shrabanighosh/PycharmProjects/randomComm/random_graph.edgelist --crossover_nodes 15 --mutation_nodes 5 --outputfile output.txt
+python3 codes/main.py --inputdir output_yelp/random_cc_output1 --flag 2 --graphfile graph_files/yelp_hotel_graph_edges.csv --crossover_nodes 15 --mutation_nodes 5 --outputfile output_yelp/random_cc_output2.txt --populationsize 2000 --iteration 2000 --function clustering_coeff
