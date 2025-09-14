@@ -5,7 +5,7 @@ import random
 import numpy as np
 import file_read_write
 
-def select_solutions(master_populations,fitness_list,G,outfile, retain_ratio=0.2, prob_ratio=0.6, diverse_count=10):
+def select_solutions(master_populations,fitness_list,G,outfile, retain_ratio=0.2, prob_ratio=0.6, diverse_count=100):
     # start_time = time.time()
     # MAX_SOLUTIONS = 100000
     df = pd.DataFrame({'Solution':master_populations,'Fitness_value':fitness_list})
