@@ -23,7 +23,7 @@ def select_solutions(master_populations,fitness_list,G,outfile, retain_ratio=0.2
     selected_fitness = sorted_fitness[:retain_count]
     print(len(selected_solutions))
 
-    # Probabilistic Selection (Roulette Wheel)
+
     remaining_solutions = sorted_solutions[retain_count:]
     remaining_fitness = sorted_fitness[retain_count:]
 
